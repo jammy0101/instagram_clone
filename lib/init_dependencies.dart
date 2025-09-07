@@ -26,7 +26,7 @@ Future<void> initDependencies() async {
       serviceLocater<UploadStoryUseCase>(),
       serviceLocater<DeleteExpiredStories>(),
       serviceLocater<MarkStoryViewed>(),
-
+      serviceLocater<DeleteStory>(),
     ),
   );
   serviceLocater.registerLazySingleton(() => StorageService(serviceLocater()));
@@ -72,5 +72,6 @@ void _initStory() {
     ..registerFactory(() => GetStoriesUseCase(serviceLocater()))
     ..registerFactory(() => UploadStoryUseCase(serviceLocater()))
       ..registerFactory(() => MarkStoryViewed(serviceLocater()))
-      ..registerFactory(() => DeleteExpiredStories(repository: serviceLocater()));
+      ..registerFactory(() => DeleteExpiredStories(repository: serviceLocater()))
+      ..registerFactory(() => DeleteStory(repository: serviceLocater()));
 }

@@ -51,6 +51,7 @@ class StoryRepositoryImpl implements StoryRepository {
     }
   }
 
+
   @override
   Future<void> deleteExpiredStories() async {
     try {
@@ -59,6 +60,15 @@ class StoryRepositoryImpl implements StoryRepository {
       throw Failure(e.toString());
     }
   }
+  @override
+  Future<void> deleteStory(String storyId) async {
+    try {
+      await remote.deleteStory(storyId); // Call the remote datasource
+    } catch (e) {
+      throw Failure(e.toString());
+    }
+  }
+
 
   @override
   Future<Either<Failure, void>> uploadStory(

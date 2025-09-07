@@ -11,4 +11,5 @@ abstract interface class StoryRepository{
   //Future<void> uploadStory(String userId, String imageUrl, [String? oldImagePath]);
   Future<void> markViewed(String storyId);
   Future<void> deleteExpiredStories();
+  Future<void> deleteStory(String storyId);
 }

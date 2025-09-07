@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/story_cubit.dart';
@@ -24,7 +23,7 @@ class StoryCircle extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 7),
             padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -39,10 +38,6 @@ class StoryCircle extends StatelessWidget {
                   ? Border.all(color: Colors.grey, width: 2)
                   : null,
             ),
-            // child: CircleAvatar(
-            //   radius: 32,
-            //   backgroundImage: NetworkImage(story.imageUrl),
-            // ),
             child: CircleAvatar(
               radius: 32,
               backgroundImage: story.imageUrl.isNotEmpty
@@ -61,3 +56,5 @@ class StoryCircle extends StatelessWidget {
     );
   }
 }
+
+

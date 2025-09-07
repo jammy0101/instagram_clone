@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:horizon/features/stories/data/models/story_model.dart';
+import 'package:horizon/features/stories/presentation/widgets/story_viewer.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/common/cubit/auth_user_cubit.dart';
 import '../../../../core/common/storage_service.dart';
@@ -56,15 +57,33 @@ class StoryListView extends StatelessWidget {
     return Column(
       children: [
         GestureDetector(
+          // onTap: () {
+          //   if (myStory.imageUrl.isNotEmpty) {
+          //     // Open story viewer
+          //     context.read<StoryCubit>().viewStory(myStory.id);
+          //   } else {
+          //     // Upload new story
+          //     _pickAndUploadStory(context);
+          //   }
+          // },
           onTap: () {
             if (myStory.imageUrl.isNotEmpty) {
-              // Open story viewer
+              // Mark as viewed
               context.read<StoryCubit>().viewStory(myStory.id);
+
+              // Navigate to story viewer
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => StoryViewerPage(story: myStory),
+                ),
+              );
             } else {
               // Upload new story
               _pickAndUploadStory(context);
             }
           },
+
           onLongPress: () async {
             // Always allow replacing with new story
             await _pickAndUploadStory(context);
@@ -102,22 +121,41 @@ class StoryListView extends StatelessWidget {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
+    final userState = context.read<AuthUserCubit>().state;
+    String? currentUserId;
+    if (userState is AuthUserLoggedIn) {
+      currentUserId = userState.user.id;
+    }
+
+    // 🔥 Define cutoff = now - 24 hours
+    final cutoff = DateTime.now().subtract(const Duration(hours: 24));
+
+    // 🔥 Keep only valid stories
+    final validStories = stories.where((s) => s.createdAt.isAfter(cutoff)).toList();
+
+    // Filter out current user’s story so it only shows in "Your Story"
+    final otherStories = validStories.where((s) => s.userId != currentUserId).toList();
+
     return SizedBox(
       height: 110,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: stories.length + 1, // +1 for "Your story"
+        itemCount: otherStories.length + 1, // +1 for "Your story"
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           if (index == 0) {
-            return _buildYourStoryCircle(context, stories);
+            // Pass only validStories so "Your Story" also disappears after 24h
+            return _buildYourStoryCircle(context, validStories);
           }
-          final story = stories[index - 1];
+          final story = otherStories[index - 1];
           return StoryCircle(story: story);
         },
       ),
     );
   }
+
+
 }

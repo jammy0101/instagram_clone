@@ -10,6 +10,7 @@ class StoryModel extends Story {
     required super.userName,
     super.isViewed,
     required super.createdAt,
+
   });
 
   factory StoryModel.fromJson(Map<String, dynamic> json) {
@@ -19,7 +20,8 @@ class StoryModel extends Story {
       imageUrl: json['image_url'] ?? '',               // 👈 default empty string
       userName: json['profiles']?['username'] ?? 'Unknown', // 👈 safe lookup
       isViewed: json['is_viewed'] ?? false,
-      createdAt: DateTime.parse(json['created_at']),// 👈 safe bool
+      //createdAt: DateTime.parse(json['created_at']),
+      createdAt: DateTime.parse(json['created_at']).toUtc(),
     );
   }
 
@@ -38,6 +40,7 @@ class StoryModel extends Story {
       'imageUrl': imageUrl,
       'userName': userName,
       'isViewed': isViewed,
+
     };
   }
 
@@ -49,6 +52,7 @@ class StoryModel extends Story {
     String? userName,
     bool? isViewed,
     DateTime? createdAt,
+
   }) {
     return StoryModel(
       id: id ?? this.id,

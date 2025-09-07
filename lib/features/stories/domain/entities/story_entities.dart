@@ -6,6 +6,7 @@ class Story {
   final bool isViewed;
   final DateTime createdAt;
 
+
   Story({
     required this.id,
     required this.userId,
