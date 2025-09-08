@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/story_cubit.dart';
 import '../../domain/entities/story_entities.dart';
-import 'story_viewer.dart';
+import '../pages/story_viewer.dart';
 
 class StoryCircle extends StatelessWidget {
   final Story story;

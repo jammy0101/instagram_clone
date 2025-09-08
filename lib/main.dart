@@ -34,14 +34,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:horizon/features/home/presentation/pages/home.dart';
-import 'package:horizon/features/profile/presentation/pages/profile.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:horizon/core/bottum_navigation_bar/main_screen.dart';
 import 'package:horizon/features/stories/presentation/cubit/story_cubit.dart';
-
 import 'core/common/cubit/auth_user_cubit.dart';
+import 'core/common/cubit/bottom_nav_cubit.dart';
 import 'core/theme/theme.dart';
 import 'features/authh/presentation/bloc/auth_bloc.dart';
 import 'features/authh/presentation/pages/login_page.dart';
+import 'features/profile/data/models/profile_model.dart';
+import 'features/profile/presentation/cubit/profile_cubit.dart';
 import 'init_dependencies_main.dart';
 // AuthRemoteDataSource → calls Supabase, can throw ServerException.
 // AuthRepository (interface) → the contract your app depends on.
@@ -49,6 +52,14 @@ import 'init_dependencies_main.dart';
 // UI → calls repository only, matches on Either to show success/error.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  //Hive.registerAdapter(ProfileModelAdapter());
+  //await Hive.openBox<ProfileModel>('profileBox');
+  if (!Hive.isAdapterRegistered(0)) {
+    Hive.registerAdapter(ProfileModelAdapter());
+  }
+
+  await Hive.openBox<ProfileModel>('profileBox');
   await initDependencies();
   runApp(
     MultiBlocProvider(
@@ -62,6 +73,11 @@ void main() async {
         BlocProvider(
           create: (_) => serviceLocater<StoryCubit>(),
         ),
+        BlocProvider(create: (_) => serviceLocater<BottomNavCubit>()),
+        BlocProvider(
+          create: (_) => serviceLocater<ProfileCubit>(),
+        ),
+
       ],
       child: const MyApp(),
     ),
@@ -95,7 +111,7 @@ class _MyAppState extends State<MyApp> {
         },
         builder: (context, isLoggedIn) {
           if(isLoggedIn){
-            return Home();
+            return MainScreen();
           }
           return LoginPage();
         },

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:horizon/features/stories/data/models/story_model.dart';
-import 'package:horizon/features/stories/presentation/widgets/story_viewer.dart';
+import 'package:horizon/features/stories/presentation/pages/story_viewer.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/common/cubit/auth_user_cubit.dart';
 import '../../../../core/common/storage_service.dart';
@@ -57,15 +57,6 @@ class StoryListView extends StatelessWidget {
     return Column(
       children: [
         GestureDetector(
-          // onTap: () {
-          //   if (myStory.imageUrl.isNotEmpty) {
-          //     // Open story viewer
-          //     context.read<StoryCubit>().viewStory(myStory.id);
-          //   } else {
-          //     // Upload new story
-          //     _pickAndUploadStory(context);
-          //   }
-          // },
           onTap: () {
             if (myStory.imageUrl.isNotEmpty) {
               // Mark as viewed

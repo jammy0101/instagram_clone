@@ -4,7 +4,7 @@ import 'package:horizon/features/home/presentation/pages/home.dart';
 import '../../../../core/common/widgets/loader.dart';
 import '../../../../core/theme/app_pallete.dart';
 import '../../../../core/utils/show_snackbar.dart';
-import '../../../profile/presentation/pages/profile.dart';
+import '../../../profile/presentation/pages/edit_profile_page.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/auth_field.dart';
 import '../widgets/auth_gradient_button.dart';

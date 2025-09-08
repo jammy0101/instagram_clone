@@ -15,23 +15,16 @@ class StoryModel extends Story {
 
   factory StoryModel.fromJson(Map<String, dynamic> json) {
     return StoryModel(
-      id: json['id']?.toString() ?? '',                // 👈 null-safe
-      userId: json['user_id']?.toString() ?? '',       // 👈 null-safe
-      imageUrl: json['image_url'] ?? '',               // 👈 default empty string
-      userName: json['profiles']?['username'] ?? 'Unknown', // 👈 safe lookup
+      id: json['id']?.toString() ?? '',                //  null-safe
+      userId: json['user_id']?.toString() ?? '',       //  null-safe
+      imageUrl: json['image_url'] ?? '',               //  default empty string
+      userName: json['profiles']?['username'] ?? 'Unknown', //  safe lookup
       isViewed: json['is_viewed'] ?? false,
       //createdAt: DateTime.parse(json['created_at']),
       createdAt: DateTime.parse(json['created_at']).toUtc(),
     );
   }
 
-  // factory StoryModel.empty() => StoryModel(
-  //   id: '',
-  //   userId: '',
-  //   imageUrl: '',
-  //   createdAt: DateTime.now(),
-  //   isViewed: false,
-  // );
 
   Map<String, dynamic> toJson() {
     return {

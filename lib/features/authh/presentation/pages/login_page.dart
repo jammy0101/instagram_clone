@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:horizon/features/authh/presentation/pages/signup_page.dart';
 import 'package:horizon/features/home/presentation/pages/home.dart';
-import 'package:horizon/features/profile/presentation/pages/profile.dart';
+import 'package:horizon/features/profile/presentation/pages/edit_profile_page.dart';
 import '../../../../core/common/widgets/loader.dart';
 import '../../../../core/theme/app_pallete.dart';
 import '../../../../core/utils/show_snackbar.dart';

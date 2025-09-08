@@ -12,9 +12,9 @@ class DeleteExpiredStories implements UseCase<void, NoParams> {
   Future<Either<Failure, void>> call(NoParams params) async {
     try {
       await repository.deleteExpiredStories(); // your repo returns Future<void>
-      return const Right(null); // ✅ Wrap void result in Right
+      return const Right(null); //  Wrap void result in Right
     } catch (e) {
-      return Left(Failure( e.toString())); // ✅ Wrap exception in Left
+      return Left(Failure( e.toString())); //  Wrap exception in Left
     }
   }
 }
