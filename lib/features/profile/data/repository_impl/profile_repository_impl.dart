@@ -36,6 +36,8 @@
 //     return await remote.uploadAvatar(userId, filePath);
 //   }
 // }
+// lib/features/profile/data/repositories/profile_repository_impl.dart
+
 import '../../domain/entities/profile_entity.dart';
 import '../../domain/repository/profile_repository.dart';
 import '../datasource/profile_local_data_source.dart';
@@ -52,25 +54,23 @@ class ProfileRepositoryImpl implements ProfileRepository {
   });
 
   @override
-  Future<Profile> getProfile(String id) async {
+  Future<Profile?> getProfile(String id) async {
     try {
       final remoteModel = await remote.fetchProfile(id);
 
       if (remoteModel != null) {
-        // ✅ cache fresh remote profile
         await local.cacheProfile(remoteModel);
         return remoteModel.toEntity();
       } else {
-        // ✅ fallback to cache
         final cached = local.getCachedProfile(id);
         if (cached != null) return cached.toEntity();
-        throw Exception('Profile not found remotely or in cache');
+        return null;
       }
     } catch (e) {
-      // ✅ if remote fails, try local cache
+      // remote failed -> try cache
       final cached = local.getCachedProfile(id);
       if (cached != null) return cached.toEntity();
-      rethrow; // bubble up if nothing works
+      rethrow;
     }
   }
 
@@ -80,10 +80,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
     try {
       final updated = await remote.updateProfile(model);
-      await local.cacheProfile(updated); // ✅ keep cache in sync
+      await local.cacheProfile(updated);
       return updated.toEntity();
     } catch (e) {
-      // ✅ if remote fails, at least update local cache
+      // fallback: save locally and return
       await local.cacheProfile(model);
       return model.toEntity();
     }
@@ -91,17 +91,14 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<String> uploadAvatar(String userId, String filePath) async {
-    try {
-      final url = await remote.uploadAvatar(userId, filePath);
+    final url = await remote.uploadAvatar(userId, filePath);
 
-      // ✅ update profile with new avatar
-      final profile = await getProfile(userId);
-      final updatedProfile = profile.copyWith(avatarUrl: url);
-      await updateProfile(updatedProfile);
-
-      return url;
-    } catch (e) {
-      throw Exception('Failed to upload avatar: $e');
+    // update cached/remote profile's avatar_url
+    final current = await getProfile(userId);
+    if (current != null) {
+      final updated = current.copyWith(avatarUrl: url);
+      await updateProfile(updated);
     }
+    return url;
   }
 }

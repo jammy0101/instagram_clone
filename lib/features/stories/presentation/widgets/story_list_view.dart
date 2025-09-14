@@ -20,7 +20,7 @@ class StoryListView extends StatelessWidget {
     final userState = context.read<AuthUserCubit>().state;
     if (userState is! AuthUserLoggedIn) return;
     final userId = userState.user.id;
-    final userName = userState.user.userName;
+    final userName = userState.user.user_name;
 
     // Pick media
     final file =
@@ -47,7 +47,7 @@ class StoryListView extends StatelessWidget {
       orElse: () => StoryModel(
         id: '',
         userId: userId,
-        userName: userState.user.userName,
+        userName: userState.user.user_name,
         imageUrl: '',
         isViewed: false,
           createdAt: DateTime.now(),

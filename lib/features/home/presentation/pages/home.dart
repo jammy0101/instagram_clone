@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
     final userState = context.read<AuthUserCubit>().state;
     if (userState is! AuthUserLoggedIn) return;
     final userId = userState.user.id;
-    final userName = userState.user.userName;
+    final userName = userState.user.user_name;
 
     // Step 1: Pick media from gallery
     final file = await pickMedia(

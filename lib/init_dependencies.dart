@@ -12,6 +12,7 @@ Future<void> initDependencies() async {
     url: AppSecret.supabaseUrl,
     anonKey: AppSecret.supabaseAnonKey,
   );
+
   serviceLocater.registerLazySingleton(() => supabase.client);
   serviceLocater.registerLazySingleton(() => AuthUserCubit());
   //serviceLocater.registerLazySingleton(() => Hive.box(name : 'blogs'));
@@ -66,12 +67,8 @@ void _initAuth() {
 
 void _initStory() {
   serviceLocater
-    ..registerFactory<StoryRemoteDataSource>(
-      () => StoryRemoteDataSourceImpl(serviceLocater()),
-    )
-    ..registerFactory<StoryRepository>(
-      () => StoryRepositoryImpl(serviceLocater()),
-    )
+    ..registerFactory<StoryRemoteDataSource>(() => StoryRemoteDataSourceImpl(serviceLocater()),)
+    ..registerFactory<StoryRepository>(() => StoryRepositoryImpl(serviceLocater()),)
     ..registerFactory(() => GetStoriesUseCase(serviceLocater()))
     ..registerFactory(() => UploadStoryUseCase(serviceLocater()))
     ..registerFactory(() => MarkStoryViewed(serviceLocater()))
@@ -83,83 +80,27 @@ void _initNavigation() {
   serviceLocater.registerLazySingleton(() => BottomNavCubit());
 }
 
-// void _initProfile() {
-//   // Hive adapter for profile
-//
-//   // ✅ Just use already opened box
-//   final profileBox = Hive.box<ProfileModel>('profileBox');
-//
-//   Hive.registerAdapter(ProfileModelAdapter());
-//   serviceLocater.registerLazySingletonAsync<Box<ProfileModel>>(
-//         () async => await Hive.openBox<ProfileModel>('profileBox'),
-//   );
-//
-//   // Data sources
-//   serviceLocater
-//     ..registerFactory<ProfileRemoteDataSource>(
-//           () => ProfileRemoteDataSource(serviceLocater()),
-//     )
-//     ..registerFactory<ProfileLocalDataSource>(
-//           () => ProfileLocalDataSource(serviceLocater()),
-//     )
-//
-//   // Repository
-//     ..registerFactory<ProfileRepository>(
-//           () => ProfileRepositoryImpl(
-//         remote: serviceLocater(),
-//         local: serviceLocater(),
-//       ),
-//     )
-//
-//   // Usecases
-//     ..registerFactory(() => GetProfile(serviceLocater()))
-//     ..registerFactory(() => UpdateProfile(serviceLocater()))
-//     ..registerFactory(() => UploadAvatar(serviceLocater()))
-//
-//   // Cubit
-//     ..registerLazySingleton(
-//           () => ProfileCubit(
-//         getProfile: serviceLocater(),
-//         updateProfile: serviceLocater(),
-//         uploadAvatar: serviceLocater(),
-//       ),
-//     );
-// }
 void _initProfile() {
   // ✅ Reuse already opened box from main.dart
   final profileBox = Hive.box<ProfileModel>('profileBox');
-
   serviceLocater
     ..registerLazySingleton<Box<ProfileModel>>(() => profileBox)
-
-  // Data sources
-    ..registerFactory<ProfileRemoteDataSource>(
-          () => ProfileRemoteDataSource(serviceLocater()),
+    // Data sources
+    ..registerFactory<ProfileRemoteDataSource>(() => ProfileRemoteDataSource(serviceLocater()),)
+    ..registerFactory<ProfileLocalDataSource>(() => ProfileLocalDataSource(serviceLocater()),)
+    // Repository
+    ..registerFactory<ProfileRepository>(() => ProfileRepositoryImpl(remote: serviceLocater(), local: serviceLocater(),),
     )
-    ..registerFactory<ProfileLocalDataSource>(
-          () => ProfileLocalDataSource(serviceLocater()),
-    )
-
-  // Repository
-    ..registerFactory<ProfileRepository>(
-          () => ProfileRepositoryImpl(
-        remote: serviceLocater(),
-        local: serviceLocater(),
-      ),
-    )
-
-  // Usecases
+    // Usecases
     ..registerFactory(() => GetProfile(serviceLocater()))
     ..registerFactory(() => UpdateProfile(serviceLocater()))
     ..registerFactory(() => UploadAvatar(serviceLocater()))
-
-  // Cubit
+    // Cubit
     ..registerLazySingleton(
-          () => ProfileCubit(
+      () => ProfileCubit(
         getProfile: serviceLocater(),
         updateProfile: serviceLocater(),
         uploadAvatar: serviceLocater(),
       ),
     );
 }
-

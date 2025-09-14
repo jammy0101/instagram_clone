@@ -60,10 +60,12 @@
 //     gender: gender,
 //   );
 // }
+// lib/features/profile/data/models/profile_model.dart
+
 import 'package:hive/hive.dart';
 import '../../domain/entities/profile_entity.dart';
 
-part 'profile_model.g.dart'; // ✅ required for Hive code generation
+part 'profile_model.g.dart';
 
 @HiveType(typeId: 0)
 class ProfileModel extends HiveObject {
@@ -71,10 +73,10 @@ class ProfileModel extends HiveObject {
   final String id;
 
   @HiveField(1)
-  final String name;
+  final String fullName;
 
   @HiveField(2)
-  final String username;
+  final String userName;
 
   @HiveField(3)
   final String bio;
@@ -94,11 +96,11 @@ class ProfileModel extends HiveObject {
   @HiveField(8)
   final String? gender;
 
-   ProfileModel({
+  ProfileModel({
     required this.id,
-    required this.name,
-    required this.username,
-    required this.bio,
+    required this.fullName,
+    required this.userName,
+    this.bio = '',
     this.avatarUrl,
     this.phone,
     this.address,
@@ -106,11 +108,11 @@ class ProfileModel extends HiveObject {
     this.gender,
   });
 
-  /// ✅ Convert from domain entity to model
+  /// domain -> model
   factory ProfileModel.fromEntity(Profile p) => ProfileModel(
     id: p.id,
-    name: p.name,
-    username: p.username,
+    fullName: p.fullName,
+    userName: p.userName,
     bio: p.bio,
     avatarUrl: p.avatarUrl,
     phone: p.phone,
@@ -119,11 +121,11 @@ class ProfileModel extends HiveObject {
     gender: p.gender,
   );
 
-  /// ✅ Convert model back to domain entity
+  /// model -> domain
   Profile toEntity() => Profile(
     id: id,
-    name: name,
-    username: username,
+    fullName: fullName,
+    userName: userName,
     bio: bio,
     avatarUrl: avatarUrl,
     phone: phone,
@@ -132,24 +134,29 @@ class ProfileModel extends HiveObject {
     gender: gender,
   );
 
-  /// ✅ Convert from JSON (Supabase)
-  factory ProfileModel.fromJson(Map<String, dynamic> json) => ProfileModel(
-    id: json['id'] as String,
-    name: json['name'] ?? '',
-    username: json['username'] ?? '',
-    bio: json['bio'] ?? '',
-    avatarUrl: json['avatar_url'] as String?,
-    phone: json['phone'] as String?,
-    address: json['address'] as String?,
-    age: json['age'] as int?,
-    gender: json['gender'] as String?,
-  );
+  /// from Supabase JSON (snake_case friendly)
+  factory ProfileModel.fromJson(Map<String, dynamic> json) {
+    return ProfileModel(
+      id: json['id'] as String,
+      fullName: (json['full_name'] ?? '') as String,
+      userName: (json['user_name'] ?? '') as String,
+      bio: (json['bio'] ?? '') as String,
+      avatarUrl: json['avatar_url'] as String?,
+      phone: json['phone'] as String?,
+      address: json['address'] as String?,
+      age: json['age'] is int
+          ? json['age'] as int
+          : (json['age'] != null
+          ? int.tryParse(json['age'].toString())
+          : null),
+      gender: json['gender'] as String?,
+    );
+  }
 
-  /// ✅ Convert to JSON (Supabase)
   Map<String, dynamic> toJson() => {
     'id': id,
-    'name': name,
-    'username': username,
+    'full_name': fullName,
+    'user_name': userName,
     'bio': bio,
     'avatar_url': avatarUrl,
     'phone': phone,
@@ -158,3 +165,4 @@ class ProfileModel extends HiveObject {
     'gender': gender,
   };
 }
+

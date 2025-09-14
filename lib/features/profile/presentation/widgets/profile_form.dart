@@ -1,76 +1,4 @@
-// import 'package:flutter/material.dart';
-// import '../../domain/entities/profile_entity.dart';
-//
-// class ProfileForm extends StatefulWidget {
-//   final Profile profile;
-//   final VoidCallback onAvatarTap;
-//   final ValueChanged<Profile> onChanged;
-//
-//   const ProfileForm({
-//     super.key,
-//     required this.profile,
-//     required this.onAvatarTap,
-//     required this.onChanged,
-//   });
-//
-//   @override
-//   State<ProfileForm> createState() => _ProfileFormState();
-// }
-//
-// class _ProfileFormState extends State<ProfileForm> {
-//   late TextEditingController _name;
-//   late TextEditingController _username;
-//   late TextEditingController _bio;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _name = TextEditingController(text: widget.profile.name);
-//     _username = TextEditingController(text: widget.profile.username);
-//     _bio = TextEditingController(text: widget.profile.bio);
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListView(
-//       padding: const EdgeInsets.all(16),
-//       children: [
-//         Center(
-//           child: Column(
-//             children: [
-//               CircleAvatar(
-//                 radius: 44,
-//                 backgroundImage: widget.profile.avatarUrl != null
-//                     ? NetworkImage(widget.profile.avatarUrl!)
-//                     : null,
-//               ),
-//               TextButton(
-//                 onPressed: widget.onAvatarTap,
-//                 child: const Text("Change profile photo"),
-//               )
-//             ],
-//           ),
-//         ),
-//         TextField(
-//           controller: _name,
-//           decoration: const InputDecoration(labelText: "Name"),
-//           onChanged: (v) => widget.onChanged(widget.profile.copyWith(name: v)),
-//         ),
-//         TextField(
-//           controller: _username,
-//           decoration: const InputDecoration(labelText: "Username"),
-//           onChanged: (v) => widget.onChanged(widget.profile.copyWith(username: v)),
-//         ),
-//         TextField(
-//           controller: _bio,
-//           decoration: const InputDecoration(labelText: "Bio"),
-//           maxLines: 3,
-//           onChanged: (v) => widget.onChanged(widget.profile.copyWith(bio: v)),
-//         ),
-//       ],
-//     );
-//   }
-// }
+
 import 'package:flutter/material.dart';
 import '../../domain/entities/profile_entity.dart';
 
@@ -102,8 +30,8 @@ class _ProfileFormState extends State<ProfileForm> {
   @override
   void initState() {
     super.initState();
-    _name = TextEditingController(text: widget.profile.name);
-    _username = TextEditingController(text: widget.profile.username);
+    _name = TextEditingController(text: widget.profile.fullName);
+    _username = TextEditingController(text: widget.profile.userName);
     _bio = TextEditingController(text: widget.profile.bio);
     _phone = TextEditingController(text: widget.profile.phone);
     _address = TextEditingController(text: widget.profile.address);
@@ -113,8 +41,8 @@ class _ProfileFormState extends State<ProfileForm> {
 
   void _onChanged() {
     widget.onChanged(widget.profile.copyWith(
-      name: _name.text,
-      username: _username.text,
+      fullName: _name.text,
+      userName: _username.text,
       bio: _bio.text,
       phone: _phone.text,
       address: _address.text,

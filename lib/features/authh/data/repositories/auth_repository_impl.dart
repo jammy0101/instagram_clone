@@ -36,9 +36,15 @@ class AuthRepositoryImpl implements AuthRepository {
           UserModel(
             id: session.user.id,
             email: session.user.email ?? '',
-            fullName: '',
-            userName: '',
+            full_name: '',
+            user_name: '',
             password: '',
+            bio: '',
+            avatarUrl: '',
+            phone: '',
+            address: '',
+            age: 0,
+            gender: '',
           ),
         );
       }

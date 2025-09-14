@@ -46,18 +46,18 @@ class StoryRemoteDataSourceImpl implements StoryRemoteDataSource {
     try {
       final response = await client
           .from('stories')
-          .select(
-          'id, user_id, image_url, is_viewed, created_at, profiles(username)')
+          .select('id, user_id, image_url, is_viewed, created_at, profiles(user_name)')
           .order('created_at', ascending: false);
 
       return (response as List)
-          .map((json) => StoryModel.fromJson(json))
+          .map((json) => StoryModel.fromJson(Map<String, dynamic>.from(json)))
           .toList();
     } catch (e) {
       debugPrint("❌ Error fetching stories: $e");
       throw ServerException(e.toString());
     }
   }
+
 
 
 
