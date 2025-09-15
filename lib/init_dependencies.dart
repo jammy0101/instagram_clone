@@ -16,13 +16,9 @@ Future<void> initDependencies() async {
   serviceLocater.registerLazySingleton(() => supabase.client);
   serviceLocater.registerLazySingleton(() => AuthUserCubit());
   //serviceLocater.registerLazySingleton(() => Hive.box(name : 'blogs'));
-  serviceLocater.registerLazySingleton(
-    () => Logout(serviceLocater<AuthRepository>()),
-  );
+  serviceLocater.registerLazySingleton(() => Logout(serviceLocater<AuthRepository>()),);
   serviceLocater.registerLazySingleton(() => InternetConnection());
-  serviceLocater.registerFactory<ConnectionChecker>(
-    () => ConnectionCheckerImpl(serviceLocater()),
-  );
+  serviceLocater.registerFactory<ConnectionChecker>(() => ConnectionCheckerImpl(serviceLocater()),);
 
   serviceLocater.registerLazySingleton(
     () => StoryCubit(
@@ -40,13 +36,9 @@ Future<void> initDependencies() async {
 void _initAuth() {
   //this is the datasource
   serviceLocater
-    ..registerFactory<AuthRemoteDataSource>(
-      () => AuthRemoteDataSourceImpl(serviceLocater()),
-    )
+    ..registerFactory<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(serviceLocater()),)
     //this is the repository
-    ..registerFactory<AuthRepository>(
-      () => AuthRepositoryImpl(serviceLocater(), serviceLocater()),
-    )
+    ..registerFactory<AuthRepository>(() => AuthRepositoryImpl(serviceLocater(), serviceLocater()),)
     //this is the Use cases
     ..registerFactory(() => UserSignUp(authRepository: serviceLocater()))
     //this is for Login
@@ -54,10 +46,9 @@ void _initAuth() {
     //This is for Current User
     ..registerFactory(() => CurrentUser(serviceLocater()))
     //This is the bloc
-    ..registerLazySingleton(
-      () => AuthBloc(
+    ..registerLazySingleton(() => AuthBloc(
         userSignUp: serviceLocater(),
-        userLogin: serviceLocater(),
+        userLogin:  serviceLocater(),
         currentUser: serviceLocater(),
         authUserCubit: serviceLocater(),
         logout: serviceLocater(),
@@ -96,8 +87,7 @@ void _initProfile() {
     ..registerFactory(() => UpdateProfile(serviceLocater()))
     ..registerFactory(() => UploadAvatar(serviceLocater()))
     // Cubit
-    ..registerLazySingleton(
-      () => ProfileCubit(
+    ..registerLazySingleton(() => ProfileCubit(
         getProfile: serviceLocater(),
         updateProfile: serviceLocater(),
         uploadAvatar: serviceLocater(),
