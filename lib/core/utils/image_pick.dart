@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
-enum MediaType { image, video }
+enum MediaType { image, video, any }
 
 Future<File?> pickMedia({
   required MediaType mediaType,

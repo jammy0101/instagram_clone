@@ -40,7 +40,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           )
         ],
       ),
-      bottomNavigationBar: const CustomNavigationBar(),
+
       body: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
           if (state.loading) return const Center(child: CircularProgressIndicator());
