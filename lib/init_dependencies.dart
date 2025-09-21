@@ -236,6 +236,7 @@ void _initFeed() {
     ..registerLazySingleton(() => AddComment(serviceLocater()))
     ..registerLazySingleton(() => SavePost(serviceLocater()))
     ..registerLazySingleton(() => UnsavePost(serviceLocater()))
+    ..registerLazySingleton(() => DeletePost(serviceLocater()))
     ..registerFactory(
           () => FeedBloc(
         getFeed: serviceLocater(),
@@ -244,6 +245,7 @@ void _initFeed() {
         savePost: serviceLocater(),
         unsavePost: serviceLocater(),
         addComment: serviceLocater(),
+        deletePost: serviceLocater(),
         repository: serviceLocater<PostRepository>(),
       ),
     );

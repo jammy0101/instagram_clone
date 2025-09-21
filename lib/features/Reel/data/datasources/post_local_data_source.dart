@@ -1,4 +1,4 @@
-// lib/features/feed/data/datasources/post_local_datasource.dart
+
 import 'package:hive/hive.dart';
 import '../models/post_model.dart';
 
@@ -15,14 +15,14 @@ class PostLocalDataSourceImpl implements PostLocalDataSource {
 
   @override
   Future<void> cacheFeed(List<PostModel> posts) async {
-    final Map<String, PostModel> map = { for (var p in posts) p.id : p };
+    final Map<String, PostModel> map = {for (var p in posts) p.id: p};
     await feedBox.putAll(map);
   }
 
   @override
   List<PostModel> getCachedFeed() {
     final list = feedBox.values.toList();
-    list.sort((a,b) => b.createdAt.compareTo(a.createdAt));
+    list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return list;
   }
 

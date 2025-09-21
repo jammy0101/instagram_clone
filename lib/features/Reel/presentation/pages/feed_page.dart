@@ -1,10 +1,16 @@
+// import 'dart:io';
+//
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:image_picker/image_picker.dart';
 // import '../../../../core/bottum_navigation_bar/bottom_navigation_bar.dart';
 // import '../../domain/entities/post_entity.dart';
 // import '../bloc/feed_bloc.dart';
+// import '../widgets/comment_section.dart';
 // import '../widgets/post_card.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'dart:typed_data'; // ✅ for Uint8List
+// import 'package:path/path.dart' show basename;
 //
 // class FeedPage extends StatefulWidget {
 //   final String currentUserId;
@@ -28,29 +34,99 @@
 //     bloc.add(RefreshFeedEvent());
 //   }
 //
+//
+//   void _openComments(Post post) {
+//     showModalBottomSheet(
+//       context: context,
+//       isScrollControlled: true,
+//       backgroundColor: Colors.transparent,
+//       builder: (_) {
+//         return DraggableScrollableSheet(
+//           initialChildSize: 0.7, // starts at 70% height
+//           minChildSize: 0.4,     // can shrink
+//           maxChildSize: 0.95,    // can expand
+//           expand: false,
+//           builder: (context, scrollController) {
+//             return Container(
+//               decoration: const BoxDecoration(
+//                 color: Colors.green,
+//                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+//                 boxShadow: [
+//                   BoxShadow(
+//                     color: Colors.black26,
+//                     blurRadius: 8,
+//                     offset: Offset(0, -2),
+//                   ),
+//                 ],
+//               ),
+//               child: Column(
+//                 children: [
+//                   // --- small drag handle ---
+//                   Container(
+//                     width: 40,
+//                     height: 5,
+//                     margin: const EdgeInsets.symmetric(vertical: 8),
+//                     decoration: BoxDecoration(
+//                       color: Colors.grey[400],
+//                       borderRadius: BorderRadius.circular(10),
+//                     ),
+//                   ),
+//
+//                   // --- title bar ---
+//                   Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         const Text(
+//                           "Comments",
+//                           style: TextStyle(
+//                             fontSize: 16,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                         IconButton(
+//                           icon: const Icon(Icons.close),
+//                           onPressed: () => Navigator.pop(context),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                   const Divider(height: 1),
+//
+//                   // --- comment section ---
+//                   Expanded(
+//                     child: CommentSection(
+//                       postId: post.id,
+//                       scrollController: scrollController,
+//                       currentUserId: widget.currentUserId,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             );
+//           },
+//         );
+//       },
+//     );
+//   }
+//
+//
+//
+//
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar: AppBar(title: const Text("Feed")),
-//       bottomNavigationBar:   const CustomNavigationBar(),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: _openMediaPicker,
-//         child: Icon(Icons.add),
-//       ),
-//
+//       bottomNavigationBar: const CustomNavigationBar(),
 //       body: Column(
 //         children: [
-//           // ✅ Navigation bar placed at the top of the body
-//
-//
-//           // ✅ Expanded so ListView takes remaining space
 //           Expanded(
 //             child: BlocBuilder<FeedBloc, FeedState>(
 //               builder: (context, state) {
 //                 if (state is FeedLoading) {
 //                   return const Center(child: CircularProgressIndicator());
-//                 }
-//                 if (state is FeedLoaded) {
+//                 } else if (state is FeedLoaded) {
 //                   final posts = state.posts;
 //                   return RefreshIndicator(
 //                     onRefresh: _refresh,
@@ -60,16 +136,19 @@
 //                         final Post p = posts[index];
 //                         return PostCard(
 //                           post: p,
-//                           onLike: () => bloc.add(ToggleLikeEvent(p.id, widget.currentUserId)),
+//                           onLike: () => bloc.add(
+//                             ToggleLikeEvent(p.id, widget.currentUserId),
+//                           ),
 //                           onComment: () => _openComments(p),
 //                           onShare: () => _sharePost(p),
-//                           onSave: () => bloc.add(ToggleSaveEvent(p.id, widget.currentUserId)),
+//                           onSave: () => bloc.add(
+//                             ToggleSaveEvent(p.id, widget.currentUserId),
+//                           ),
 //                         );
 //                       },
 //                     ),
 //                   );
-//                 }
-//                 if (state is FeedError) {
+//                 } else if (state is FeedError) {
 //                   return Center(child: Text(state.message));
 //                 }
 //                 return const SizedBox();
@@ -81,70 +160,54 @@
 //     );
 //   }
 //
-//   void _openComments(Post p) {
-//     showModalBottomSheet(
-//       context: context,
-//       builder: (_) => Center(child: Text('Comments for ${p.id}')),
-//     );
-//   }
-//
 //   void _sharePost(Post p) {
 //     // share logic (use share_plus)
 //   }
+//
+//   Future<String?> uploadMediaToSupabase(
+//     String filePath, {
+//     required bool isVideo,
+//   }) async {
+//     try {
+//       final supabase = Supabase.instance.client;
+//       final file = File(filePath);
+//       final fileName =
+//           '${DateTime.now().millisecondsSinceEpoch}_${basename(file.path)}';
+//       final bucketName =
+//           'posts_bucket'; // 👈 make sure this bucket exists in Supabase
+//
+//       // ✅ Read file as bytes
+//       final Uint8List bytes = await file.readAsBytes();
+//
+//       // ✅ Upload as binary
+//       await supabase.storage
+//           .from(bucketName)
+//           .uploadBinary(
+//             fileName,
+//             bytes,
+//             fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+//           );
+//
+//       // ✅ Get public URL
+//       final url = supabase.storage.from(bucketName).getPublicUrl(fileName);
+//       return url;
+//     } catch (e) {
+//       print("Upload error: $e");
+//       return null;
+//     }
+//   }
 // }
-//
-//
-// void _openMediaPicker() {
-//   showModalBottomSheet(
-//     context: context,
-//     builder: (_) => Column(
-//       mainAxisSize: MainAxisSize.min,
-//       children: [
-//         ListTile(
-//           leading: Icon(Icons.image),
-//           title: Text('Pick Image'),
-//           onTap: () async {
-//             Navigator.pop(context);
-//             final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-//             if (file != null) {
-//               final url = await uploadMediaToSupabase(file, isVideo: false);
-//               if (url != null) {
-//                 bloc.add(CreatePostEvent(userId: widget.currentUserId, mediaUrl: url, isVideo: false));
-//               }
-//             }
-//           },
-//         ),
-//         ListTile(
-//           leading: Icon(Icons.videocam),
-//           title: Text('Pick Video'),
-//           onTap: () async {
-//             Navigator.pop(context);
-//             final file = await ImagePicker().pickVideo(source: ImageSource.gallery);
-//             if (file != null) {
-//               final url = await uploadMediaToSupabase(file, isVideo: true);
-//               if (url != null) {
-//                 bloc.add(CreatePostEvent(userId: widget.currentUserId, mediaUrl: url, isVideo: true));
-//               }
-//             }
-//           },
-//         ),
-//       ],
-//     ),
-//   );
-// }
-//
-// // bottomNavigationBar: const CustomNavigationBar(),
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' show basename;
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../../core/bottum_navigation_bar/bottom_navigation_bar.dart';
-import '../../../../core/common/cubit/auth_user_cubit.dart';
-import '../../../../core/common/storage_service.dart';
-import '../../../../core/utils/image_pick.dart';
-import '../../../../init_dependencies_main.dart';
-import '../../../stories/presentation/cubit/story_cubit.dart';
 import '../../domain/entities/post_entity.dart';
 import '../bloc/feed_bloc.dart';
+import '../widgets/comment_section.dart';
 import '../widgets/post_card.dart';
 
 class FeedPage extends StatefulWidget {
@@ -169,50 +232,125 @@ class _FeedPageState extends State<FeedPage> {
     bloc.add(RefreshFeedEvent());
   }
 
-  // ✅ _openMediaPicker must be inside the State class
-  void _openMediaPicker() {
+  // void _openComments(Post post) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (_) {
+  //       return DraggableScrollableSheet(
+  //         initialChildSize: 0.7,
+  //         minChildSize: 0.4,
+  //         maxChildSize: 0.95,
+  //         expand: false,
+  //         builder: (context, scrollController) {
+  //           return Container(
+  //             decoration: const BoxDecoration(
+  //               color: Colors.blueGrey,
+  //               borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  //               boxShadow: [
+  //                 BoxShadow(
+  //                   color: Colors.black26,
+  //                   blurRadius: 8,
+  //                   offset: Offset(0, -2),
+  //                 ),
+  //               ],
+  //             ),
+  //             child: CommentSection(
+  //               postId: post.id,
+  //               scrollController: scrollController,
+  //               currentUserId: widget.currentUserId,
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+  void _openComments(Post post) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.image),
-            title: const Text('Pick Image'),
-            onTap: () async {
-              Navigator.pop(context);
-              final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-              if (file != null) {
-                final url = await uploadMediaToSupabase(file.path, isVideo: false);
-                if (url != null) {
-                  bloc.add(CreatePostEvent(
-                      userId: widget.currentUserId,
-                      mediaUrl: url,
-                      isVideo: false));
-                }
-              }
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.videocam),
-            title: const Text('Pick Video'),
-            onTap: () async {
-              Navigator.pop(context);
-              final file = await ImagePicker().pickVideo(source: ImageSource.gallery);
-              if (file != null) {
-                final url = await uploadMediaToSupabase(file.path, isVideo: true);
-                if (url != null) {
-                  bloc.add(CreatePostEvent(
-                      userId: widget.currentUserId,
-                      mediaUrl: url,
-                      isVideo: true));
-                }
-              }
-            },
-          ),
-        ],
-      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // keeps rounded corners visible
+      builder: (_) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.7,
+          minChildSize: 0.4,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF1E1E1E) // Dark mode bg
+                    : Colors.white, // Light mode bg
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 12,
+                    offset: Offset(0, -4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // 🔹 Drag handle
+                  Container(
+                    width: 40,
+                    height: 5,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+
+                  // 🔹 Comment Section
+                  Expanded(
+                    child: CommentSection(
+                      postId: post.id,
+                      scrollController: scrollController,
+                      currentUserId: widget.currentUserId,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
+  }
+
+
+  void _sharePost(Post p) {
+    // TODO: add share_plus
+  }
+
+  Future<String?> uploadMediaToSupabase(
+      String filePath, {
+        required bool isVideo,
+      }) async {
+    try {
+      final supabase = Supabase.instance.client;
+      final file = File(filePath);
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${basename(file.path)}';
+      final bucketName = 'posts_bucket';
+
+      final Uint8List bytes = await file.readAsBytes();
+      await supabase.storage.from(bucketName).uploadBinary(
+        fileName,
+        bytes,
+        fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+      );
+
+      return supabase.storage.from(bucketName).getPublicUrl(fileName);
+    } catch (e) {
+      print("Upload error: $e");
+      return null;
+    }
   }
 
   @override
@@ -220,46 +358,6 @@ class _FeedPageState extends State<FeedPage> {
     return Scaffold(
       appBar: AppBar(title: const Text("Feed")),
       bottomNavigationBar: const CustomNavigationBar(),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _openMediaPicker,
-      //   child: const Icon(Icons.add),
-      // ),
-      // floatingActionButton: FloatingActionButton(
-      //   heroTag: 'feed_fab', // <-- add a unique tag
-      //   onPressed: _openMediaPicker,
-      //   child: Icon(Icons.add),
-      // ),
-
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     showModalBottomSheet(
-      //       context: context,
-      //       builder: (_) => Column(
-      //         mainAxisSize: MainAxisSize.min,
-      //         children: [
-      //           ListTile(
-      //             leading: const Icon(Icons.add_a_photo),
-      //             title: const Text('Add Story'),
-      //             onTap: () async {
-      //               Navigator.pop(context);
-      //               await _pickAndUploadStory(); // Add to story section
-      //             },
-      //           ),
-      //           ListTile(
-      //             leading: const Icon(Icons.post_add),
-      //             title: const Text('Create Post'),
-      //             onTap: () async {
-      //               Navigator.pop(context);
-      //               await _pickAndUploadPost(); // Add to feed
-      //             },
-      //           ),
-      //         ],
-      //       ),
-      //     );
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
-
       body: Column(
         children: [
           Expanded(
@@ -277,10 +375,14 @@ class _FeedPageState extends State<FeedPage> {
                         final Post p = posts[index];
                         return PostCard(
                           post: p,
-                          onLike: () => bloc.add(ToggleLikeEvent(p.id, widget.currentUserId)),
+                          onLike: () => bloc.add(
+                            ToggleLikeEvent(p.id, widget.currentUserId),
+                          ),
                           onComment: () => _openComments(p),
                           onShare: () => _sharePost(p),
-                          onSave: () => bloc.add(ToggleSaveEvent(p.id, widget.currentUserId)),
+                          onSave: () => bloc.add(
+                            ToggleSaveEvent(p.id, widget.currentUserId),
+                          ),
                         );
                       },
                     ),
@@ -296,43 +398,4 @@ class _FeedPageState extends State<FeedPage> {
       ),
     );
   }
-
-  void _openComments(Post p) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => Center(child: Text('Comments for ${p.id}')),
-    );
-  }
-
-  void _sharePost(Post p) {
-    // share logic (use share_plus)
-  }
 }
-
-// ✅ Dummy uploadMediaToSupabase function
-Future<String?> uploadMediaToSupabase(String filePath, {required bool isVideo}) async {
-  // Here you should write your Supabase storage upload logic.
-  // Return the uploaded media URL.
-  // For testing, just return filePath for now
-  return filePath;
-}
-
-
-// Future<void> _pickAndUploadStory() async {
-//   final userState = context.read<AuthUserCubit>().state;
-//   if (userState is! AuthUserLoggedIn) return;
-//
-//   final userId = userState.user.id;
-//   final userName = userState.user.user_name;
-//
-//   final file = await pickMedia(
-//     mediaType: MediaType.image,
-//     source: ImageSource.gallery,
-//   );
-//   if (file == null) return;
-//
-//   final storageService = serviceLocater<StorageService>();
-//   final imageUrl = await storageService.uploadStoryFile(file, userId);
-//
-//   context.read<StoryCubit>().uploadStory(userId, userName, imageUrl);
-// }

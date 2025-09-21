@@ -54,3 +54,22 @@ class CreatePostEvent extends FeedEvent {
     this.isVideo = false,
   });
 }
+
+
+class DeletePostEvent extends FeedEvent {
+  final String postId;
+  final String userId; // add this
+  DeletePostEvent({required this.postId, required this.userId});
+}
+
+
+class LoadCommentsEvent extends FeedEvent {
+  final String postId;
+  LoadCommentsEvent(this.postId);
+}
+
+class CommentsLoaded extends FeedState {
+  final String postId;
+  final List<Comment> comments;
+  CommentsLoaded(this.postId, this.comments);
+}

@@ -63,6 +63,11 @@ void main() async {
     Hive.registerAdapter(ProfileModelAdapter());
   }
 
+  // Register PostModel adapter safely
+  if (!Hive.isAdapterRegistered(2)) {
+    Hive.registerAdapter(PostModelAdapter());
+  }
+
   await Hive.openBox<ProfileModel>('profileBox');
   await Hive.openBox<String>('socialProfileBox');
   await Hive.openBox<PostModel>('feedBox');

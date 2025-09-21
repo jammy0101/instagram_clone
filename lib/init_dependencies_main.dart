@@ -16,6 +16,7 @@ import 'features/Reel/data/models/post_model.dart';
 import 'features/Reel/data/repositories/post_repository_impl.dart';
 import 'features/Reel/domain/repositories/post_repository.dart';
 import 'features/Reel/domain/usecase/add_comment.dart';
+import 'features/Reel/domain/usecase/delete_post.dart';
 import 'features/Reel/domain/usecase/get_feed.dart';
 import 'features/Reel/domain/usecase/like_post.dart';
 import 'features/Reel/domain/usecase/save_post.dart';
