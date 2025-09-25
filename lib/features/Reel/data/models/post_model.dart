@@ -4,7 +4,7 @@ import '../../domain/entities/post_entity.dart';
 
 part 'post_model.g.dart';
 
-
+//
 // @HiveType(typeId: 2)
 // class PostModel extends Post {
 //   @HiveField(0)
@@ -16,7 +16,7 @@ part 'post_model.g.dart';
 //   @HiveField(9)
 //   final String? userAvatarUrlHive;
 //
-//   PostModel({
+//    PostModel({
 //     required String id,
 //     required String userId,
 //     required String mediaUrl,
@@ -52,93 +52,47 @@ part 'post_model.g.dart';
 //         username: username,
 //         userAvatarUrl: userAvatarUrl,
 //       );
-//
-//   factory PostModel.fromJson(Map<String, dynamic> json) => PostModel(
-//     id: json['id'] as String,
-//     userId: json['user_id'] as String,
-//     mediaUrl: json['media_url'] as String? ?? '',
-//     isVideo: json['is_video'] as bool? ?? false,
-//     content: json['content'] as String? ?? '',
-//     caption: json['caption'] as String? ?? '',
-//     mediaUrls: (json['media_urls'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
-//     type: json['type'] as String? ?? 'image',
-//     likesCount: (json['likes_count'] as int?) ?? 0,
-//     commentsCount: (json['comments_count'] as int?) ?? 0,
-//     createdAt: DateTime.parse(json['created_at'] as String),
-//     username: json['username'] as String?,
-//     userAvatarUrl: json['avatar_url'] as String?,
-//     isSaved: json['is_saved'] as bool? ?? false,
-//     isLiked: json['is_liked'] as bool? ?? false,
-//   );
-//
-//   @override
-//   Map<String, dynamic> toJson() => {
-//     'id': id,
-//     'user_id': userId,
-//     'media_url': mediaUrl,
-//     'is_video': isVideo,
-//     'content': content,
-//     'caption': caption,
-//     'media_urls': mediaUrls,
-//     'type': type,
-//     'likes_count': likesCount,
-//     'comments_count': commentsCount,
-//     'created_at': createdAt.toIso8601String(),
-//     'username': usernameHive,
-//     'avatar_url': userAvatarUrlHive,
-//     'is_saved': isSaved,
-//     'is_liked': isLiked,
-//   };
+
 // }
+
+
 @HiveType(typeId: 2)
 class PostModel extends Post {
-  @HiveField(0)
-  final String idHive;
+  const PostModel({
+    @HiveField(0) required String id,
+    @HiveField(1) required String userId,
+    @HiveField(2) required String mediaUrl,
+    @HiveField(3) required bool isVideo,
+    @HiveField(4) required String content,
+    @HiveField(5) required String caption,
+    @HiveField(6) required List<String> mediaUrls,
+    @HiveField(7) required String type,
+    @HiveField(8) required int likesCount,
+    @HiveField(9) required int commentsCount,
+    @HiveField(10) required DateTime createdAt,
+    @HiveField(11) String? username,
+    @HiveField(12) String? userAvatarUrl,
+    @HiveField(13) bool isSaved = false,
+    @HiveField(14) bool isLiked = false,
+  }) : super(
+    id: id,
+    userId: userId,
+    mediaUrl: mediaUrl,
+    isVideo: isVideo,
+    content: content,
+    caption: caption,
+    mediaUrls: mediaUrls,
+    type: type,
+    likesCount: likesCount,
+    commentsCount: commentsCount,
+    createdAt: createdAt,
+    username: username,
+    userAvatarUrl: userAvatarUrl,
+    isSaved: isSaved,
+    isLiked: isLiked,
+  );
 
-  @HiveField(8)
-  final String? usernameHive;
-
-  @HiveField(9)
-  final String? userAvatarUrlHive;
-
-   PostModel({
-    required String id,
-    required String userId,
-    required String mediaUrl,
-    required bool isVideo,
-    required String content,
-    required String caption,
-    required List<String> mediaUrls,
-    required String type,
-    required int likesCount,
-    required int commentsCount,
-    required DateTime createdAt,
-    String? username,
-    String? userAvatarUrl,
-    bool isSaved = false,
-    bool isLiked = false,
-  })  : idHive = id,
-        usernameHive = username,
-        userAvatarUrlHive = userAvatarUrl,
-        super(
-        id: id,
-        userId: userId,
-        mediaUrl: mediaUrl,
-        isVideo: isVideo,
-        content: content,
-        likesCount: likesCount,
-        commentsCount: commentsCount,
-        createdAt: createdAt,
-        caption: caption,
-        mediaUrls: mediaUrls,
-        type: type,
-        isSaved: isSaved,
-        isLiked: isLiked,
-        username: username,
-        userAvatarUrl: userAvatarUrl,
-      );
-
-  /// ✅ Parse JSON safely
+  /// ✅ From JSON
   factory PostModel.fromJson(Map<String, dynamic> json) {
     final singleUrl = json['media_url'] as String?;
     final listUrls = (json['media_urls'] as List?)
@@ -146,7 +100,6 @@ class PostModel extends Post {
         .toList() ??
         [];
 
-    // Normalize: ensure at least one URL
     final normalizedUrls = listUrls.isNotEmpty
         ? listUrls
         : (singleUrl != null && singleUrl.isNotEmpty ? [singleUrl] : []);
@@ -158,7 +111,7 @@ class PostModel extends Post {
       isVideo: json['is_video'] as bool? ?? false,
       content: json['content'] as String? ?? '',
       caption: json['caption'] as String? ?? '',
-      mediaUrls: normalizedUrls.cast<String>(), // ✅ always List<String>
+      mediaUrls: normalizedUrls.cast<String>(), // ✅ fix type
       type: json['type'] as String? ?? 'image',
       likesCount: (json['likes_count'] as int?) ?? 0,
       commentsCount: (json['comments_count'] as int?) ?? 0,
@@ -170,8 +123,7 @@ class PostModel extends Post {
     );
   }
 
-  /// ✅ Ensure mediaUrls is saved as List<String>
-  @override
+  /// ✅ To JSON
   Map<String, dynamic> toJson() => {
     'id': id,
     'user_id': userId,
@@ -179,15 +131,36 @@ class PostModel extends Post {
     'is_video': isVideo,
     'content': content,
     'caption': caption,
-    'media_urls': mediaUrls.map((e) => e.toString()).toList(), // ✅ Fix here
+    'media_urls': mediaUrls,
     'type': type,
     'likes_count': likesCount,
     'comments_count': commentsCount,
     'created_at': createdAt.toIso8601String(),
-    'username': usernameHive ?? username,
-    'avatar_url': userAvatarUrlHive ?? userAvatarUrl,
+    'username': username,
+    'avatar_url': userAvatarUrl,
     'is_saved': isSaved,
     'is_liked': isLiked,
   };
-}
 
+  /// ✅ From Entity
+  factory PostModel.fromEntity(Post post) => PostModel(
+    id: post.id,
+    userId: post.userId,
+    mediaUrl: post.mediaUrl,
+    isVideo: post.isVideo,
+    content: post.content,
+    caption: post.caption,
+    mediaUrls: post.mediaUrls,
+    type: post.type,
+    likesCount: post.likesCount,
+    commentsCount: post.commentsCount,
+    createdAt: post.createdAt,
+    username: post.username,
+    userAvatarUrl: post.userAvatarUrl,
+    isSaved: post.isSaved,
+    isLiked: post.isLiked,
+  );
+
+  /// ✅ To Entity
+  Post toEntity() => this;
+}

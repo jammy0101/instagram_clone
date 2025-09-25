@@ -1,4 +1,4 @@
-
+import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import '../../data/models/comment.dart';
@@ -88,6 +88,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
+
+
   Future<void> _onDeletePost(DeletePostEvent event, Emitter<FeedState> emit) async {
     if (state is! FeedLoaded) return;
 
@@ -107,6 +109,28 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   }
 
 
+
+  // Future<void> _onDeletePost(DeletePostEvent event, Emitter<FeedState> emit) async {
+  //   if (state is! FeedLoaded) return;
+  //
+  //   final currentPosts = (state as FeedLoaded).posts;
+  //   final updatedPosts = currentPosts.where((p) => p.id != event.postId).toList();
+  //
+  //   // Optimistic UI
+  //   emit(FeedLoaded(updatedPosts));
+  //
+  //   try {
+  //     // Delete locally and remotely
+  //     final box = await Hive.openBox<PostModel>('feedBox');
+  //     await box.delete(event.postId);
+  //     await repository.deletePost(event.postId);
+  //   } catch (e) {
+  //     // Rollback UI if delete fails
+  //     emit(FeedLoaded(currentPosts));
+  //     print("Delete failed: $e");
+  //   }
+  // }
+
   Future<void> _onLoadFeed(LoadFeedEvent e, Emitter<FeedState> emit) async {
     final cachedPosts = repository.getCachedFeed();
     if (cachedPosts.isNotEmpty) {
@@ -125,6 +149,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       // else: keep showing cached posts
     }
   }
+
+
 
 
 

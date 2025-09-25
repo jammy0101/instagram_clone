@@ -11,7 +11,10 @@ class FeedLoaded extends FeedState {
   FeedLoaded(this.posts);
 }
 
+
+
 class FeedError extends FeedState {
   final String message;
   FeedError(this.message);
 }
+

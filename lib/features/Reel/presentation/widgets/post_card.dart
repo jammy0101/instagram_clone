@@ -1,6 +1,5 @@
-// // lib/features/feed/presentation/widgets/post_card.dart
-// import 'dart:io';
 //
+// import 'dart:io';
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,40 +14,39 @@
 //   final VoidCallback onSave;
 //
 //   const PostCard({
-//     Key? key,
+//     super.key,
 //     required this.post,
 //     required this.onLike,
 //     required this.onComment,
 //     required this.onShare,
 //     required this.onSave,
-//   }) : super(key: key);
+//   });
 //
 //   @override
 //   Widget build(BuildContext context) {
-//     print("Post ID: ${post.id}");
-//     print("mediaUrl: ${post.mediaUrl}");
-//     print("mediaUrls: ${post.mediaUrls}");
 //     final mediaUrl = post.mediaUrls.isNotEmpty ? post.mediaUrls.first : null;
 //     return Card(
 //       margin: EdgeInsets.zero,
 //       child: Column(
 //         crossAxisAlignment: CrossAxisAlignment.start,
 //         children: [
-//           // header
 //           ListTile(
 //             leading: CircleAvatar(
-//               backgroundImage: post.userAvatarUrl != null ? NetworkImage(post.userAvatarUrl!) : null,
-//               child: post.userAvatarUrl == null ? Icon(Icons.person) : null,
+//               backgroundImage: post.userAvatarUrl != null
+//                   ? NetworkImage(post.userAvatarUrl!)
+//                   : null,
+//               child: post.userAvatarUrl == null
+//                   ? const Icon(Icons.person)
+//                   : null,
 //             ),
 //             title: Text(post.username ?? 'Unknown'),
 //             subtitle: Text(
 //               _formatTime(post.createdAt),
-//               style: TextStyle(fontSize: 12),
+//               style: const TextStyle(fontSize: 12),
 //             ),
-//             //trailing: Icon(Icons.more_vert),
 //             trailing: PopupMenuButton(
 //               itemBuilder: (_) => [
-//                 PopupMenuItem(
+//                 const PopupMenuItem(
 //                   value: 'delete',
 //                   child: Text('Delete'),
 //                 ),
@@ -61,10 +59,7 @@
 //                 }
 //               },
 //             ),
-//
 //           ),
-//
-//
 //           if (mediaUrl != null)
 //             AspectRatio(
 //               aspectRatio: 1,
@@ -74,8 +69,10 @@
 //                     return CachedNetworkImage(
 //                       imageUrl: mediaUrl,
 //                       fit: BoxFit.cover,
-//                       placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-//                       errorWidget: (_, __, ___) => const Center(child: Icon(Icons.broken_image)),
+//                       placeholder: (_, __) =>
+//                       const Center(child: CircularProgressIndicator()),
+//                       errorWidget: (_, __, ___) =>
+//                       const Center(child: Icon(Icons.broken_image)),
 //                     );
 //                   } else if (File(mediaUrl).existsSync()) {
 //                     return Image.file(File(mediaUrl), fit: BoxFit.cover);
@@ -85,27 +82,34 @@
 //                 },
 //               ),
 //             ),
-//
-//
-//
-//           // actions row
 //           Padding(
 //             padding: const EdgeInsets.symmetric(horizontal: 8.0),
 //             child: Row(
 //               children: [
 //                 IconButton(
-//                   icon: Icon(post.isLiked ? Icons.favorite : Icons.favorite_border, color: post.isLiked ? Colors.red : null),
+//                   icon: Icon(
+//                     post.isLiked
+//                         ? Icons.favorite
+//                         : Icons.favorite_border,
+//                     color: post.isLiked ? Colors.red : null,
+//                   ),
 //                   onPressed: onLike,
 //                 ),
-//                 IconButton(icon: Icon(Icons.comment_outlined), onPressed: onComment),
-//                 IconButton(icon: Icon(Icons.send_outlined), onPressed: onShare),
-//                 Spacer(),
-//                 IconButton(icon: Icon(post.isSaved ? Icons.bookmark : Icons.bookmark_border), onPressed: onSave),
+//                 IconButton(
+//                     icon: const Icon(Icons.comment_outlined),
+//                     onPressed: onComment),
+//                 IconButton(
+//                     icon: const Icon(Icons.send_outlined),
+//                     onPressed: onShare),
+//                 const Spacer(),
+//                 IconButton(
+//                     icon: Icon(post.isSaved
+//                         ? Icons.bookmark
+//                         : Icons.bookmark_border),
+//                     onPressed: onSave),
 //               ],
 //             ),
 //           ),
-//
-//
 //           Padding(
 //             padding: const EdgeInsets.symmetric(horizontal: 12.0),
 //             child: Row(
@@ -114,21 +118,18 @@
 //                   '${post.likesCount} likes',
 //                   style: const TextStyle(fontWeight: FontWeight.bold),
 //                 ),
-//                 const SizedBox(width: 16), // spacing
-//                 Text(
-//                   '${post.commentsCount} comments',
-//                   style: TextStyle(),
-//                 ),
+//                 const SizedBox(width: 16),
+//                 Text('${post.commentsCount} comments'),
 //               ],
 //             ),
 //           ),
-//
 //           if (post.caption.isNotEmpty)
 //             Padding(
-//               padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+//               padding: const EdgeInsets.symmetric(
+//                   horizontal: 12.0, vertical: 8.0),
 //               child: Text(post.caption),
 //             ),
-//           SizedBox(height: 8),
+//           const SizedBox(height: 8),
 //         ],
 //       ),
 //     );
@@ -168,15 +169,17 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaUrl = post.mediaUrls.isNotEmpty ? post.mediaUrls.first : null;
+
     return Card(
       margin: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ✅ Header with cached avatar
           ListTile(
             leading: CircleAvatar(
               backgroundImage: post.userAvatarUrl != null
-                  ? NetworkImage(post.userAvatarUrl!)
+                  ? CachedNetworkImageProvider(post.userAvatarUrl!)
                   : null,
               child: post.userAvatarUrl == null
                   ? const Icon(Icons.person)
@@ -188,21 +191,23 @@ class PostCard extends StatelessWidget {
               style: const TextStyle(fontSize: 12),
             ),
             trailing: PopupMenuButton(
-              itemBuilder: (_) => [
-                const PopupMenuItem(
+              itemBuilder: (_) => const [
+                PopupMenuItem(
                   value: 'delete',
                   child: Text('Delete'),
                 ),
               ],
               onSelected: (value) {
                 if (value == 'delete') {
-                  BlocProvider.of<FeedBloc>(context).add(
+                  context.read<FeedBloc>().add(
                     DeletePostEvent(postId: post.id, userId: post.userId),
                   );
                 }
               },
             ),
           ),
+
+          // ✅ Cached image or local file
           if (mediaUrl != null)
             AspectRatio(
               aspectRatio: 1,
@@ -225,34 +230,40 @@ class PostCard extends StatelessWidget {
                 },
               ),
             ),
+
+
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
                 IconButton(
                   icon: Icon(
-                    post.isLiked
-                        ? Icons.favorite
-                        : Icons.favorite_border,
+                    post.isLiked ? Icons.favorite : Icons.favorite_border,
                     color: post.isLiked ? Colors.red : null,
                   ),
                   onPressed: onLike,
                 ),
                 IconButton(
-                    icon: const Icon(Icons.comment_outlined),
-                    onPressed: onComment),
+                  icon: const Icon(Icons.comment_outlined),
+                  onPressed: onComment,
+                ),
                 IconButton(
-                    icon: const Icon(Icons.send_outlined),
-                    onPressed: onShare),
+                  icon: const Icon(Icons.send_outlined),
+                  onPressed: onShare,
+                ),
                 const Spacer(),
                 IconButton(
-                    icon: Icon(post.isSaved
-                        ? Icons.bookmark
-                        : Icons.bookmark_border),
-                    onPressed: onSave),
+                  icon: Icon(
+                    post.isSaved ? Icons.bookmark : Icons.bookmark_border,
+                  ),
+                  onPressed: onSave,
+                ),
               ],
             ),
           ),
+
+          // ✅ Likes + Comments
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
@@ -266,10 +277,12 @@ class PostCard extends StatelessWidget {
               ],
             ),
           ),
+
+          // ✅ Caption
           if (post.caption.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 12.0, vertical: 8.0),
+              padding:
+              const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               child: Text(post.caption),
             ),
           const SizedBox(height: 8),

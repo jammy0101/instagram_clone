@@ -1,5 +1,6 @@
 part of 'feed_bloc.dart';
 
+
 abstract class FeedEvent {}
 
 class LoadFeedEvent extends FeedEvent {
@@ -43,6 +44,7 @@ class CreatePostEvent extends FeedEvent {
   final String? mediaUrl; // <-- add this
   final List<String>? mediaUrls; // optional if you also have multiple files
   final bool isVideo;
+  final List<XFile>? mediaFiles;
 
   CreatePostEvent({
     required this.userId,
@@ -52,6 +54,7 @@ class CreatePostEvent extends FeedEvent {
     this.mediaUrl,      // <-- add this
     this.mediaUrls,
     this.isVideo = false,
+    this.mediaFiles,
   });
 }
 
